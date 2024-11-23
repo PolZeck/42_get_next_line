@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pledieu <pledieu@student.42lyon.fr>        +#+  +:+       +#+        */
+/*   By: pol <pol@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:47:21 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/21 10:00:13 by pledieu          ###   ########lyon.fr   */
+/*   Updated: 2024/11/23 19:23:00 by pol              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "get_next_line.h"
 
-// calculate str's lenght
 size_t	ft_strlen(const char *s)
 {
 	size_t	len;
@@ -23,7 +23,6 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
-// find a char in a char *
 char	*ft_strchr(const char *s, int c)
 {
 	if (!s)
@@ -37,20 +36,19 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-// concate 2 strs
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*result;
 	size_t	i;
 	size_t	j;
 
-	i = 0;
-	j = 0;
 	if (!s1 && !s2)
 		return (NULL);
 	result = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!result)
 		return (NULL);
+	i = 0;
+	j = 0;
 	while (s1 && s1[i])
 	{
 		result[i] = s1[i];
@@ -95,9 +93,6 @@ char	*clean_stash(char *stock)
 	size_t	j;
 
 	i = 0;
-	j = 0;
-	if (!stock)
-		return (NULL);
 	while (stock[i] && stock[i] != '\n')
 		i++;
 	if (!stock[i])
@@ -109,6 +104,7 @@ char	*clean_stash(char *stock)
 	if (!new_stock)
 		return (NULL);
 	i++;
+	j = 0;
 	while (stock[i])
 		new_stock[j++] = stock[i++];
 	new_stock[j] = '\0';
