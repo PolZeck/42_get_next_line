@@ -6,7 +6,7 @@
 /*   By: pol <pol@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:47:17 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/23 19:22:29 by pol              ###   ########.fr       */
+/*   Updated: 2024/11/23 19:30:48 by pol              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,16 @@ static char	*read_and_store(int fd, char *stock)
 	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!buffer)
 		return (NULL);
-	while ((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
+	bytes_read = read(fd, buffer, BUFFER_SIZE);
+	while (bytes_read > 0)
 	{
 		buffer[bytes_read] = '\0';
 		stock = ft_strjoin(stock, buffer);
+		if (!stock)
+			break ;
 		if (ft_strchr(stock, '\n'))
 			break ;
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
 	if (bytes_read < 0)
@@ -62,4 +66,3 @@ char	*get_next_line(int fd)
 	stock = clean_stash(stock);
 	return (line);
 }
-
