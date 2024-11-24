@@ -6,7 +6,7 @@
 /*   By: pol <pol@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:47:17 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/24 16:22:50 by pol              ###   ########.fr       */
+/*   Updated: 2024/11/24 16:28:59 by pol              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,17 @@ char	*get_next_line(int fd)
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (free(stash), stash = NULL, NULL);
-	while (!ft_strchr(stash, '\n') && (bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
+	bytes_read = 1;
+	while (!ft_strchr(stash, '\n') && bytes_read > 0)
 	{
-		buffer[bytes_read] = '\0';
-		stash = ft_strjoin(stash, buffer);
-		if (!stash)
-			return (free(buffer), NULL);
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read > 0)
+		{
+			buffer[bytes_read] = '\0';
+			stash = ft_strjoin(stash, buffer);
+			if (!stash)
+				return (free(buffer), NULL);
+		}
 	}
 	free(buffer);
 	if (!stash || !*stash)
