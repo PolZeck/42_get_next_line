@@ -6,7 +6,7 @@
 /*   By: pol <pol@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:47:21 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/23 19:30:58 by pol              ###   ########.fr       */
+/*   Updated: 2024/11/24 16:15:01 by pol              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,78 +35,49 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_substr(const char *s, size_t start, size_t len)
 {
-	char	*result;
+	char	*sub;
+	size_t	i;
+
+	if (!s || start >= ft_strlen(s))
+		return (NULL);
+	if (len > ft_strlen(s) - start)
+		len = ft_strlen(s) - start;
+	sub = malloc(sizeof(char) * (len + 1));
+	if (!sub)
+		return (NULL);
+	i = 0;
+	while (i < len && s[start + i])
+	{
+		sub[i] = s[start + i];
+		i++;
+	}
+	sub[i] = '\0';
+	return (sub);
+}
+
+char	*ft_strjoin(char *s1, const char *s2)
+{
+	char	*joined;
 	size_t	i;
 	size_t	j;
 
 	if (!s1 && !s2)
 		return (NULL);
-	result = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!result)
-		return (NULL);
+	joined = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!joined)
+		return (free(s1), NULL);
 	i = 0;
-	j = 0;
 	while (s1 && s1[i])
 	{
-		result[i] = s1[i];
+		joined[i] = s1[i];
 		i++;
 	}
-	while (s2 && s2[j])
-		result[i++] = s2[j++];
-	result[i] = '\0';
-	free(s1);
-	return (result);
-}
-
-char	*extract_line(char *stock)
-{
-	char	*line;
-	size_t	i;
-
-	i = 0;
-	if (!stock || !stock[0])
-		return (NULL);
-	while (stock[i] && stock[i] != '\n')
-		i++;
-	line = malloc(sizeof(char) * (i + 2));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (stock[i] && stock[i] != '\n')
-	{
-		line[i] = stock[i];
-		i++;
-	}
-	if (stock[i] == '\n')
-		line[i++] = '\n';
-	line[i] = '\0';
-	return (line);
-}
-
-char	*clean_stash(char *stock)
-{
-	char	*new_stock;
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	while (stock[i] && stock[i] != '\n')
-		i++;
-	if (!stock[i])
-	{
-		free(stock);
-		return (NULL);
-	}
-	new_stock = malloc(sizeof(char) * (ft_strlen(stock) - i + 1));
-	if (!new_stock)
-		return (NULL);
-	i++;
 	j = 0;
-	while (stock[i])
-		new_stock[j++] = stock[i++];
-	new_stock[j] = '\0';
-	free(stock);
-	return (new_stock);
+	while (s2 && s2[j])
+		joined[i++] = s2[j++];
+	joined[i] = '\0';
+	free(s1);
+	return (joined);
 }

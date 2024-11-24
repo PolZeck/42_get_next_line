@@ -6,7 +6,7 @@
 /*   By: pol <pol@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:47:17 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/23 19:30:48 by pol              ###   ########.fr       */
+/*   Updated: 2024/11/24 16:20:12 by pol              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,45 +24,55 @@
 
 #include "get_next_line.h"
 
-static char	*read_and_store(int fd, char *stock)
+static char	*extract_line(char **stash)
 {
-	char	*buffer;
-	ssize_t	bytes_read;
+	char	*line;
+	char	*remaining;
+	size_t	i;
 
-	buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
-		return (NULL);
-	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	while (bytes_read > 0)
+	i = 0;
+	if (!*stash || !**stash)
+		return (free(*stash), *stash = NULL, NULL);
+	while ((*stash)[i] && (*stash)[i] != '\n')
+		i++;
+	if ((*stash)[i] == '\n')
+		i++;
+	line = ft_substr(*stash, 0, i);
+	if (!line)
+		return (free(*stash), *stash = NULL, NULL);
+	if ((*stash)[i])
 	{
-		buffer[bytes_read] = '\0';
-		stock = ft_strjoin(stock, buffer);
-		if (!stock)
-			break ;
-		if (ft_strchr(stock, '\n'))
-			break ;
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		remaining = ft_substr(*stash, i, ft_strlen(*stash) - i);
+		if (!remaining)
+			return (free(line), free(*stash), *stash = NULL, NULL);
+		free(*stash);
+		*stash = remaining;
 	}
-	free(buffer);
-	if (bytes_read < 0)
-	{
-		free(stock);
-		return (NULL);
-	}
-	return (stock);
+	else
+		return (free(*stash), *stash = NULL, line);
+	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stock;
-	char		*line;
+	static char	*stash;
+	char		*buffer;
+	ssize_t		bytes_read;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	stock = read_and_store(fd, stock);
-	if (!stock)
-		return (NULL);
-	line = extract_line(stock);
-	stock = clean_stash(stock);
-	return (line);
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+		return (free(stash), stash = NULL, NULL);
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (free(stash), stash = NULL, NULL);
+	while (!ft_strchr(stash, '\n') && (bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0)
+	{
+		buffer[bytes_read] = '\0';
+		stash = ft_strjoin(stash, buffer);
+		if (!stash)
+			return (free(buffer), NULL);
+	}
+	free(buffer);
+	if (!stash || !*stash)
+		return (free(stash), stash = NULL, NULL);
+	return (extract_line(&stash));
 }
