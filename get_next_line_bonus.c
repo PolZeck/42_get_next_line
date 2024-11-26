@@ -6,67 +6,65 @@
 /*   By: pledieu <pledieu@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:36:14 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/25 12:37:13 by pledieu          ###   ########lyon.fr   */
+/*   Updated: 2024/11/26 16:04:24 by pledieu          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
-#include <limits.h>
 
-static char	*extract_line(char **stock)
+static void	reset_buffer(char *buf)
 {
-	char	*line;
-	char	*remaining;
 	size_t	i;
 
 	i = 0;
-	if (!*stock || !**stock)
-		return (free(*stock), *stock = NULL, NULL);
-	while ((*stock)[i] && (*stock)[i] != '\n')
+	while (buf[i])
+		buf[i++] = '\0';
+}
+
+static void	shift_buffer(char *buf)
+{
+	size_t	i;
+	size_t	j;
+
+	j = 0;
+	i = 0;
+	while (buf[i] && buf[i] != '\n')
 		i++;
-	if ((*stock)[i] == '\n')
+	if (buf[i] == '\n')
 		i++;
-	line = ft_substr(*stock, 0, i);
-	if (!line)
-		return (free(*stock), *stock = NULL, NULL);
-	if ((*stock)[i])
+	while (buf[i + j])
 	{
-		remaining = ft_substr(*stock, i, ft_strlen(*stock) - i);
-		if (!remaining)
-			return (free(line), free(*stock), *stock = NULL, NULL);
-		free(*stock);
-		*stock = remaining;
+		buf[j] = buf[i + j];
+		j++;
 	}
-	else
-		return (free(*stock), *stock = NULL, line);
-	return (line);
+	buf[j] = '\0';
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*stock[OPEN_MAX];
-	char		*buffer;
-	ssize_t		bytes_read;
+	static char	buffer[OPEN_MAX][BUFFER_SIZE + 1];
+	char		*res;
+	int			bytes_read;
 
-	if (fd < 0 || fd >= OPEN_MAX || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
-		return (free(stock[fd]), stock[fd] = NULL, NULL);
-	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buffer)
-		return (free(stock[fd]), stock[fd] = NULL, NULL);
+	res = NULL;
 	bytes_read = 1;
-	while (!ft_strchr(stock[fd], '\n') && bytes_read > 0)
+	if (fd < 0 || fd >= OPEN_MAX || BUFFER_SIZE <= 0)
+		return (NULL);
+	res = ft_strdup(buffer[fd]);
+	if (!res)
+		return (NULL);
+	while (bytes_read > 0 && ft_check_line(res) == 0)
 	{
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read > 0)
-		{
-			buffer[bytes_read] = '\0';
-			stock[fd] = ft_strjoin(stock[fd], buffer);
-			if (!stock[fd])
-				return (free(buffer), NULL);
-		}
+		bytes_read = read(fd, buffer[fd], BUFFER_SIZE);
+		if (bytes_read < 0)
+			return (reset_buffer(buffer[fd]), free(res), NULL);
+		buffer[fd][bytes_read] = '\0';
+		res = ft_strjoin(res, buffer[fd]);
+		if (!res)
+			return (NULL);
 	}
-	free(buffer);
-	if (!stock[fd] || !*stock[fd])
-		return (free(stock[fd]), stock[fd] = NULL, NULL);
-	return (extract_line(&stock[fd]));
+	shift_buffer(buffer[fd]);
+	if (res[0] == '\0')
+		return (free(res), NULL);
+	return (res);
 }

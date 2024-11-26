@@ -6,7 +6,7 @@
 /*   By: pledieu <pledieu@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:36:08 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/25 11:23:59 by pledieu          ###   ########lyon.fr   */
+/*   Updated: 2024/11/26 15:42:50 by pledieu          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,19 @@
 
 # include <stdlib.h>
 # include <unistd.h>
+# include <limits.h>
 
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 42
+#  define BUFFER_SIZE 32
+# endif
+# ifndef OPEN_MAX
+#  define OPEN_MAX 1024
 # endif
 
-# define OPEN_MAX 1024
-
 char	*get_next_line(int fd);
+char	*ft_strdup(const char *s1);
+char	*ft_strjoin(char *s1, char *s2);
 size_t	ft_strlen(const char *s);
-char	*ft_strchr(const char *s, int c);
-char	*ft_substr(const char *s, size_t start, size_t len);
-char	*ft_strjoin(char *s1, const char *s2);
+int		ft_check_line(char *str);
 
 #endif
