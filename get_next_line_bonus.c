@@ -6,13 +6,13 @@
 /*   By: pledieu <pledieu@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/25 10:36:14 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/26 16:04:24 by pledieu          ###   ########lyon.fr   */
+/*   Updated: 2024/11/28 10:46:06 by pledieu          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-static void	reset_buffer(char *buf)
+static void	clean_buffer(char *buf)
 {
 	size_t	i;
 
@@ -57,7 +57,7 @@ char	*get_next_line(int fd)
 	{
 		bytes_read = read(fd, buffer[fd], BUFFER_SIZE);
 		if (bytes_read < 0)
-			return (reset_buffer(buffer[fd]), free(res), NULL);
+			return (clean_buffer(buffer[fd]), free(res), NULL);
 		buffer[fd][bytes_read] = '\0';
 		res = ft_strjoin(res, buffer[fd]);
 		if (!res)

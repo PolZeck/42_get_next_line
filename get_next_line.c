@@ -6,19 +6,19 @@
 /*   By: pledieu <pledieu@student.42lyon.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 15:47:17 by pledieu           #+#    #+#             */
-/*   Updated: 2024/11/26 15:47:52 by pledieu          ###   ########lyon.fr   */
+/*   Updated: 2024/11/28 11:22:18 by pledieu          ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static void	reset_buffer(char *buf)
+static void	clean_buffer(char *buf)
 {
-	size_t	idx;
+	size_t	i;
 
-	idx = 0;
-	while (buf[idx])
-		buf[idx++] = '\0';
+	i = 0;
+	while (buf[i])
+		buf[i++] = '\0';
 }
 
 static void	shift_buffer(char *buf)
@@ -42,27 +42,27 @@ static void	shift_buffer(char *buf)
 
 char	*get_next_line(int fd)
 {
-	static char	mem[BUFFER_SIZE + 1] = "\0";
+	static char	stock[BUFFER_SIZE + 1] = "\0";
 	char		*res;
 	int			bytes_read;
 
 	bytes_read = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	res = ft_strdup(mem);
+	res = ft_strdup(stock);
 	if (!res)
 		return (NULL);
 	while (bytes_read && ft_check_line(res) == 0)
 	{
-		bytes_read = read(fd, mem, BUFFER_SIZE);
+		bytes_read = read(fd, stock, BUFFER_SIZE);
 		if (bytes_read < 0)
-			return (reset_buffer(mem), free(res), NULL);
-		mem[bytes_read] = '\0';
-		res = ft_strjoin(res, mem);
+			return (clean_buffer(stock), free(res), NULL);
+		stock[bytes_read] = '\0';
+		res = ft_strjoin(res, stock);
 		if (!res)
 			return (NULL);
 	}
-	shift_buffer(mem);
+	shift_buffer(stock);
 	if (res[0] == 0)
 		return (free(res), NULL);
 	return (res);
